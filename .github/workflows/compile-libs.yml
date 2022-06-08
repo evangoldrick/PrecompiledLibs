@@ -18,19 +18,28 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: download and compile
+      - name: download
         run: |
               wget https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.gz
               tar -xf boost_1_79_0.tar.gz
-              rm boost_1_79_0.tar.gz
-
+              
+      - name: compile
+        run: |
               cd boost_1_79_0
               ./bootstrap.sh --prefix=../boost_lib/
               ./b2 install
               cd ..
-              rm boost_1_79_0
               
+      - name: zip
+        run: |
+              tar -czf boost.tar.gz boost_lib
+      
+      - name: delete artifacts
+        run: |
+              rm boost_1_79_0.tar.gz
+              rm -r boost_1_79_0
+              rm -r boost_lib
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Automated compile
+          commit_message: Actinos compile
 
